@@ -59,64 +59,7 @@ class AutoMLPipeline:
         )
         logging.info("Data preprocessed and split into training and testing sets.")
 
-    def train_and_evaluate(self):
-        models = {
-            "Logistic Regression": LogisticRegression(solver='liblinear', random_state=self.random_state),
-            "Random Forest": RandomForestClassifier(random_state=self.random_state),
-            "Gradient Boosting": GradientBoostingClassifier(random_state=self.random_state),
-            "SVC": SVC(random_state=self.random_state, probability=True)
-        }
-
-        param_grids = {
-            "Logistic Regression": {
-                "classifier__C": [0.1, 1.0, 10.0]
-            },
-            "Random Forest": {
-                "classifier__n_estimators": [50, 100, 200],
-                "classifier__max_depth": [None, 10, 20]
-            },
-            "Gradient Boosting": {
-                "classifier__n_estimators": [50, 100, 200],
-                "classifier__learning_rate": [0.01, 0.1, 0.2]
-            },
-            "SVC": {
-                "classifier__C": [0.1, 1.0, 10.0],
-                "classifier__kernel": ["linear", "rbf"]
-            }
-        }
-
-        best_score = 0
-        for name, model in models.items():
-            logging.info(f"Training and evaluating {name}...")
-            pipeline = Pipeline(steps=[("preprocessor", self.preprocessor), ("classifier", model)])
-            grid_search = GridSearchCV(
-                pipeline, param_grids[name], cv=KFold(n_splits=5, shuffle=True, random_state=self.random_state),
-                scoring="accuracy", n_jobs=-1, verbose=0
-            )
-            grid_search.fit(self.X_train, self.y_train)
-
-            predictions = grid_search.best_estimator_.predict(self.X_test)
-            accuracy = accuracy_score(self.y_test, predictions)
-            precision = precision_score(self.y_test, predictions, average='weighted', zero_division=0)
-            recall = recall_score(self.y_test, predictions, average='weighted', zero_division=0)
-            f1 = f1_score(self.y_test, predictions, average='weighted', zero_division=0)
-
-            logging.info(f"{name} - Best Params: {grid_search.best_params_}")
-            logging.info(f"{name} - Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1: {f1:.4f}")
-
-            if accuracy > best_score:
-                best_score = accuracy
-                self.model = grid_search.best_estimator_
-                self.best_model_name = name
-                self.metrics = {
-                    "accuracy": accuracy,
-                    "precision": precision,
-                    "recall": recall,
-                    "f1_score": f1
-                }
-        logging.info(f"Best model found: {self.best_model_name} with Accuracy: {self.metrics["accuracy"]:.4f}")
-
         pass
 
 if __name__ == "__main__":
-    print("Initial AutoML pipeline setup.")
+    print("AutoML pipeline with data loading and preprocessing.")
