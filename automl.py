@@ -123,4 +123,23 @@ class AutoMLPipeline:
         return self.model, self.metrics
 
 if __name__ == "__main__":
-    print("AutoML pipeline with model training and evaluation.")
+    # Example usage (requires a dummy dataset.csv in the same directory)
+    # Create a dummy CSV for demonstration if it doesn't exist
+    if not os.path.exists("dataset.csv"):
+        dummy_data = {
+            "feature1": np.random.rand(100),
+            "feature2": np.random.randint(0, 100, 100),
+            "feature3": [random.choice(['A', 'B', 'C']) for _ in range(100)],
+            "target": [random.choice([0, 1]) for _ in range(100)]
+        }
+        pd.DataFrame(dummy_data).to_csv("dataset.csv", index=False)
+        logging.info("Created dummy dataset.csv for example.")
+
+    try:
+        pipeline = AutoMLPipeline(data_path="dataset.csv", target_column="target")
+        best_model, metrics = pipeline.run()
+        logging.info("AutoML pipeline execution complete.")
+        logging.info(f"Final Best Model: {pipeline.best_model_name}")
+        logging.info(f"Final Metrics: {metrics}")
+    except Exception as e:
+        logging.error(f"AutoML pipeline failed: {e}")
